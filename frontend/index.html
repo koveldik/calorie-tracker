@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трекер калорий и БЖУ</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Шапка приложения -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <span class="logo-icon">🥗</span>
+        <span class="logo-text">CalorieTracker</span>
+      </div>
+      <div id="nav-user-panel" class="nav-user-panel hidden">
+        <span class="user-greeting">Привет, <b id="nav-username">user</b></span>
+        <span id="nav-role-badge" class="badge badge-client">Client</span>
+        <button id="btn-edit-target" class="btn btn-sm btn-outline">🎯 Цель: <span id="nav-target-cal">2000</span> ккал</button>
+        <button id="btn-logout" class="btn btn-sm btn-danger">Выйти</button>
+      </div>
+    </header>
+
+    <!-- Секция Авторизации / Регистрации -->
+    <main id="auth-section" class="auth-container">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button id="tab-login" class="auth-tab active">Вход</button>
+          <button id="tab-register" class="auth-tab">Регистрация</button>
+        </div>
+
+        <!-- Форма входа -->
+        <form id="form-login" class="auth-form">
+          <h2>Вход в систему</h2>
+          <div class="form-group">
+            <label>Имя пользователя</label>
+            <input type="text" id="login-username" required placeholder="Например, client или admin">
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Войти</button>
+          
+          <div class="quick-credentials">
+            <p>Тестовые аккаунты:</p>
+            <div class="quick-btns">
+              <button type="button" class="btn-chip" onclick="fillCredentials('client', 'client123')">Клиент (client)</button>
+              <button type="button" class="btn-chip" onclick="fillCredentials('admin', 'admin123')">Админ (admin)</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Форма регистрации -->
+        <form id="form-register" class="auth-form hidden">
+          <h2>Регистрация нового пользователя</h2>
+          <div class="form-group">
+            <label>Имя пользователя</label>
+            <input type="text" id="reg-username" required placeholder="Введите логин">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="reg-email" required placeholder="user@example.com">
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="reg-password" required placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label>Роль в системе</label>
+            <select id="reg-role">
+              <option value="client" selected>Клиент (Client)</option>
+              <option value="admin">Администратор (Admin)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Суточная норма калорий</label>
+            <input type="number" id="reg-target" value="2000" min="500" max="10000">
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Создать аккаунт</button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Основной рабочий экран приложения -->
+    <main id="main-section" class="main-container hidden">
+      <!-- Навигационные вкладки -->
+      <nav class="main-tabs">
+        <button class="nav-tab active" data-tab="tab-diary">📖 Дневник питания (CRUD 2)</button>
+        <button class="nav-tab" data-tab="tab-foods">🍎 Справочник продуктов (CRUD 1)</button>
+        <button id="nav-tab-admin" class="nav-tab hidden" data-tab="tab-admin">⚙️ Панель Администратора</button>
+      </nav>
+
+      <!-- ВКЛАДКА 1: ДНЕВНИК ПИТАНИЯ -->
+      <section id="tab-diary" class="tab-content active">
+        <!-- Блок выбора даты и суточного прогресса -->
+        <div class="diary-header-card">
+          <div class="date-selector">
+            <label for="diary-date">Дата дневника:</label>
+            <input type="date" id="diary-date">
+            <button id="btn-today" class="btn btn-sm btn-outline">Сегодня</button>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item main-kpi">
+              <span class="kpi-label">Калории (Факт / Цель)</span>
+              <div class="kpi-values">
+                <span id="sum-consumed" class="kpi-val">0</span>
+                <span class="kpi-sep">/</span>
+                <span id="sum-target" class="kpi-target">2000</span>
+                <span class="kpi-unit">ккал</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div id="calorie-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+              <span id="sum-remaining" class="kpi-sub">Осталось: 2000 ккал</span>
+            </div>
+
+            <div class="summary-item macro-item proteins">
+              <span class="macro-label">Белки</span>
+              <span id="sum-proteins" class="macro-val">0.0 г</span>
+            </div>
+            <div class="summary-item macro-item fats">
+              <span class="macro-label">Жиры</span>
+              <span id="sum-fats" class="macro-val">0.0 г</span>
+            </div>
+            <div class="summary-item macro-item carbs">
+              <span class="macro-label">Углеводы</span>
+              <span id="sum-carbs" class="macro-val">0.0 г</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Кнопка добавления записи -->
+        <div class="section-actions">
+          <h3>Записи приемов пищи за день</h3>
+          <button id="btn-open-add-meal" class="btn btn-primary">+ Добавить прием пищи</button>
+        </div>
+
+        <!-- Список записей по категориям -->
+        <div id="meals-list" class="meals-list">
+          <!-- Рендерится через JS -->
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 2: СПРАВОЧНИК ПРОДУКТОВ (CRUD 1) -->
+      <section id="tab-foods" class="tab-content">
+        <div class="foods-header">
+          <div class="foods-search-bar">
+            <input type="text" id="food-search-input" placeholder="🔍 Поиск продукта по названию...">
+            <select id="food-category-filter">
+              <option value="Все">Все категории</option>
+            </select>
+          </div>
+          <button id="btn-open-add-food" class="btn btn-success">+ Новый продукт</button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Название</th>
+                <th>Категория</th>
+                <th>Ккал / 100г</th>
+                <th>Белки (г)</th>
+                <th>Жиры (г)</th>
+                <th>Углеводы (г)</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="foods-table-body">
+              <!-- Рендерится через JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 3: АДМИНИСТРАТИВНАЯ ПАНЕЛЬ -->
+      <section id="tab-admin" class="tab-content">
+        <div class="admin-panel-card">
+          <h2>Панель контроля администратора</h2>
+          <p>Просмотр последних действий всех зарегистрированных пользователей системы.</p>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Пользователь (ID)</th>
+                  <th>Продукт</th>
+                  <th>Тип приема</th>
+                  <th>Вес</th>
+                  <th>Ккал порции</th>
+                  <th>Время</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- Рендерится через JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРИЕМА ПИЩИ -->
+    <div id="modal-meal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-meal-title">Добавить прием пищи</h3>
+          <button class="btn-close" onclick="closeModal('modal-meal')">&times;</button>
+        </div>
+        <form id="form-meal">
+          <input type="hidden" id="meal-edit-id">
+          <div class="form-group">
+            <label>Приём пищи</label>
+            <select id="meal-type-select" required>
+              <option value="breakfast">Завтрак</option>
+              <option value="lunch">Обед</option>
+              <option value="dinner">Ужин</option>
+              <option value="snack">Перекус</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Продукт питания</label>
+            <select id="meal-food-select" required>
+              <!-- Заполняется списком продуктов -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Вес порции (в граммах)</label>
+            <input type="number" id="meal-weight-input" min="1" max="5000" step="1" required placeholder="Например, 150">
+          </div>
+          <div class="form-group">
+            <label>Заметка / Комментарий (необязательно)</label>
+            <input type="text" id="meal-note-input" placeholder="Например: до тренировки">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeModal('modal-meal')">Отмена</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРОДУКТА (CRUD 1) -->
+    <div id="modal-food" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-food-title">Новый продукт</h3>
+          <button class="btn-close" onclick="closeModal('modal-food')">&times;</button>
+        </div>
+        <form id="form-food">
+          <input type="hidden" id="food-edit-id">
+          <div class="form-group">
+            <label>Название продукта</label>
+            <input type="text" id="food-name" required placeholder="Например, Овсяные хлопья">
+          </div>
+          <div class="form-group">
+            <label>Категория</label>
+            <input type="text" id="food-category" placeholder="Крупы, Мясо, Молочные...">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ккал на 100г</label>
+              <input type="number" id="food-calories" step="0.1" min="0" required placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>Белки (г)</label>
+              <input type="number" id="food-proteins" step="0.1" min="0" required placeholder="0">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Жиры (г)</label>
+              <input type="number" id="food-fats" step="0.1" min="0" required placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>Углеводы (г)</label>
+              <input type="number" id="food-carbs" step="0.1" min="0" required placeholder="0">
+            </div>
+          </div>
+          <div id="admin-verify-group" class="form-group hidden">
+            <label class="checkbox-label">
+              <input type="checkbox" id="food-is-verified"> Верифицировать продукт (доступен всем как проверенный)
+            </label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeModal('modal-food')">Отмена</button>
+            <button type="submit" class="btn btn-success">Сохранить продукт</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # 1. База данных PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: calorie_tracker_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: calorie_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d calorie_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Серверная часть (FastAPI Backend)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: calorie_tracker_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/calorie_tracker
+      - SECRET_KEY=super-secret-jwt-key-calorie-tracker-2026
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. Пользовательский интерфейс (Nginx UI)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: calorie_tracker_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
