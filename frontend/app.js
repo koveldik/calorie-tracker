@@ -60,11 +60,15 @@ function setupEventListeners() {
   // Навигация по главным вкладкам
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', (e) => {
+      const btn = e.currentTarget;
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      e.target.classList.add('active');
-      const targetId = e.target.getAttribute('data-tab');
-      document.getElementById(targetId).classList.add('active');
+      btn.classList.add('active');
+      const targetId = btn.getAttribute('data-tab');
+      const targetContent = document.getElementById(targetId);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
 
       if (targetId === 'tab-diary') loadDiaryData();
       if (targetId === 'tab-foods') loadFoodsData();
@@ -205,7 +209,7 @@ function showMainApp() {
 
   document.getElementById('nav-username').textContent = state.user.username;
   const roleBadge = document.getElementById('nav-role-badge');
-  roleBadge.textContent = state.user.role === 'admin' ? 'Администратор' : 'Клиент';
+  roleBadge.textContent = state.user.role === 'admin' ? 'Администратор' : 'Пользователь';
   roleBadge.className = `badge ${state.user.role === 'admin' ? 'badge-admin' : 'badge-client'}`;
   document.getElementById('nav-target-cal').textContent = state.user.daily_calorie_target;
 
@@ -240,7 +244,7 @@ async function promptChangeTarget() {
   }
 }
 
-// --- РАБОТА С ДНЕВНИКОМ ПИТАНИЯ (CRUD 2) ---
+// --- РАБОТА С ДНЕВНИКОМ ПИТАНИЯ ---
 async function loadDiaryData() {
   try {
     const [summary, meals] = await Promise.all([
@@ -400,7 +404,7 @@ window.deleteMealEntry = async function(id) {
   }
 };
 
-// --- РАБОТА СО СПРАВОЧНИКОМ ПРОДУКТОВ (CRUD 1) ---
+// --- РАБОТА СО СПРАВОЧНИКОМ ПРОДУКТОВ ---
 async function loadFoodsData() {
   const query = document.getElementById('food-search-input').value.trim();
   const category = document.getElementById('food-category-filter').value;

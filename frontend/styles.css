@@ -300,6 +300,15 @@ body {
   box-shadow: var(--shadow);
 }
 
+/* Переключение вкладок контента */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
 /* Дневник карточки */
 .diary-header-card {
   background: var(--surface);

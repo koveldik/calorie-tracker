@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Трекер калорий и БЖУ</title>
+  <title>Трекер калорий и питания</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -17,7 +17,7 @@
       </div>
       <div id="nav-user-panel" class="nav-user-panel hidden">
         <span class="user-greeting">Привет, <b id="nav-username">user</b></span>
-        <span id="nav-role-badge" class="badge badge-client">Client</span>
+        <span id="nav-role-badge" class="badge badge-client">Пользователь</span>
         <button id="btn-edit-target" class="btn btn-sm btn-outline">🎯 Цель: <span id="nav-target-cal">2000</span> ккал</button>
         <button id="btn-logout" class="btn btn-sm btn-danger">Выйти</button>
       </div>
@@ -36,7 +36,7 @@
           <h2>Вход в систему</h2>
           <div class="form-group">
             <label>Имя пользователя</label>
-            <input type="text" id="login-username" required placeholder="Например, client или admin">
+            <input type="text" id="login-username" required placeholder="Введите логин">
           </div>
           <div class="form-group">
             <label>Пароль</label>
@@ -45,17 +45,17 @@
           <button type="submit" class="btn btn-primary btn-block">Войти</button>
           
           <div class="quick-credentials">
-            <p>Тестовые аккаунты:</p>
+            <p>Быстрый вход для проверки:</p>
             <div class="quick-btns">
-              <button type="button" class="btn-chip" onclick="fillCredentials('client', 'client123')">Клиент (client)</button>
-              <button type="button" class="btn-chip" onclick="fillCredentials('admin', 'admin123')">Админ (admin)</button>
+              <button type="button" class="btn-chip" onclick="fillCredentials('client', 'client123')">Пользователь</button>
+              <button type="button" class="btn-chip" onclick="fillCredentials('admin', 'admin123')">Администратор</button>
             </div>
           </div>
         </form>
 
         <!-- Форма регистрации -->
         <form id="form-register" class="auth-form hidden">
-          <h2>Регистрация нового пользователя</h2>
+          <h2>Создание аккаунта</h2>
           <div class="form-group">
             <label>Имя пользователя</label>
             <input type="text" id="reg-username" required placeholder="Введите логин">
@@ -69,17 +69,17 @@
             <input type="password" id="reg-password" required placeholder="••••••••">
           </div>
           <div class="form-group">
-            <label>Роль в системе</label>
+            <label>Тип учетной записи</label>
             <select id="reg-role">
-              <option value="client" selected>Клиент (Client)</option>
-              <option value="admin">Администратор (Admin)</option>
+              <option value="client" selected>Пользователь</option>
+              <option value="admin">Администратор</option>
             </select>
           </div>
           <div class="form-group">
             <label>Суточная норма калорий</label>
             <input type="number" id="reg-target" value="2000" min="500" max="10000">
           </div>
-          <button type="submit" class="btn btn-success btn-block">Создать аккаунт</button>
+          <button type="submit" class="btn btn-success btn-block">Зарегистрироваться</button>
         </form>
       </div>
     </main>
@@ -88,9 +88,9 @@
     <main id="main-section" class="main-container hidden">
       <!-- Навигационные вкладки -->
       <nav class="main-tabs">
-        <button class="nav-tab active" data-tab="tab-diary">📖 Дневник питания (CRUD 2)</button>
-        <button class="nav-tab" data-tab="tab-foods">🍎 Справочник продуктов (CRUD 1)</button>
-        <button id="nav-tab-admin" class="nav-tab hidden" data-tab="tab-admin">⚙️ Панель Администратора</button>
+        <button class="nav-tab active" data-tab="tab-diary">📖 Дневник питания</button>
+        <button class="nav-tab" data-tab="tab-foods">🍎 База продуктов</button>
+        <button id="nav-tab-admin" class="nav-tab hidden" data-tab="tab-admin">⚙️ Управление</button>
       </nav>
 
       <!-- ВКЛАДКА 1: ДНЕВНИК ПИТАНИЯ -->
@@ -145,7 +145,7 @@
         </div>
       </section>
 
-      <!-- ВКЛАДКА 2: СПРАВОЧНИК ПРОДУКТОВ (CRUD 1) -->
+      <!-- ВКЛАДКА 2: СПРАВОЧНИК ПРОДУКТОВ -->
       <section id="tab-foods" class="tab-content">
         <div class="foods-header">
           <div class="foods-search-bar">
@@ -181,8 +181,8 @@
       <!-- ВКЛАДКА 3: АДМИНИСТРАТИВНАЯ ПАНЕЛЬ -->
       <section id="tab-admin" class="tab-content">
         <div class="admin-panel-card">
-          <h2>Панель контроля администратора</h2>
-          <p>Просмотр последних действий всех зарегистрированных пользователей системы.</p>
+          <h2>История активности</h2>
+          <p>Журнал последних добавлений продуктов и приемов пищи пользователями.</p>
           <div class="table-container">
             <table class="data-table">
               <thead>
@@ -245,7 +245,7 @@
       </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРОДУКТА (CRUD 1) -->
+    <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ПРОДУКТА -->
     <div id="modal-food" class="modal-overlay hidden">
       <div class="modal-card">
         <div class="modal-header">
