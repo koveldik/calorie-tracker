@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from models import UserRole, MealType
 
 
@@ -8,7 +8,7 @@ from models import UserRole, MealType
 
 class UserBase(BaseModel):
     username: str
-    email: EmailStr
+    email: str
     daily_calorie_target: Optional[int] = 2000
 
 

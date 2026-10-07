@@ -1,12 +1,10 @@
+import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
 from models import User, UserRole, FoodItem
 from auth import get_password_hash
 from routers import auth, foods, meals
-
-# Создание таблиц при запуске
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Calorie Tracker API",
@@ -29,8 +27,24 @@ app.include_router(meals.router)
 
 
 @app.on_event("startup")
-def seed_initial_data():
-    """Автоматическое наполнение базовыми учетными записями и популярными продуктами"""
+def startup_init():
+    """Подключение к базе данных с повторными попытками и наполнение данными"""
+    # Ждем готовности базы данных до 10 секунд
+    connected = False
+    for attempt in range(1, 11):
+        try:
+            Base.metadata.create_all(bind=engine)
+            connected = True
+            break
+        except Exception as e:
+            print(f"[Попытка {attempt}/10] Ожидание базы данных: {e}")
+            time.sleep(1)
+
+    if not connected:
+        print("[ОШИБКА] Не удалось подключиться к базе данных.")
+        return
+
+    # Наполнение тестовыми данными
     db = SessionLocal()
     try:
         # 1. Создание тестового администратора, если его нет
